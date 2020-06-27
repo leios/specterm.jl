@@ -2,19 +2,55 @@ using TextUserInterfaces
 using TextUserInterfaces.NCurses
 
 mutable struct Object
-    x::Int
     y::Int
-    width::Int
+    x::Int
     height::Int
-    content::String
+    width::Int
+    content::Union{Any, Vector{Any}}
 end
 
 function render_object(obj)
-    mvprintw(obj.x, obj.y, obj.content)
+    if typeof(obj.content)==String
+        mvprintw(obj.y, obj.x, obj.content)
+    elseif typeof(obj.content)==Vector{String}
+        for i = 1:obj.height
+            mvprintw(obj.y+i, obj.x, obj.content[i])
+        end
+    end
 end
 
-#function create_border(init_y::Int, init_y::Int, height::Int, width::Int)
-#end
+function render_objects(objects::Vector{Object})
+    for obj in objects
+        render_object(obj)
+    end
+end
+
+function create_rectangle(init_y::Int, init_x::Int, height::Int, width::Int;
+                          filltype = "border")
+    rectangle_content = Vector{String}()
+    left = []
+    right = []
+    center = []
+    if filltype == "border"
+        left = ["┌", "│",  "└"]
+        right = ["┐", "│",  "┘"]
+        center = ["─", " ",  "─"]
+    end
+
+    # index for character types in set of left, right, and center
+    ci = 1
+    for j = 1:height
+        if (j == 2)
+            ci = 2
+        elseif (j == height)
+            ci = 3
+        end
+        
+        push!(rectangle_content,left[ci]*lpad("", width-2,center[ci])*right[ci])
+    end
+
+    return Object(init_y, init_x, height, width, rectangle_content)
+end
 
 function create_person(init_y::Int, init_x::Int)
     person = Object(init_y, init_x, 1, 1, "S")
@@ -50,29 +86,34 @@ function main()
     bg = init()
     curs_set(0)
 
-    person = create_person(1,1)
-    render_object(person)
+    objects = Vector{Object}()
 
-    mvwprintw(bg, 21, 20, "yo")
+    border = create_rectangle(20,0,4,80)
+    person = create_person(1,1)
+
+    push!(objects, person)
+    push!(objects, border)
+    render_objects(objects)
+
     refresh()
 
     # Eventually, we need some sort of FPS counter, this will work for now.
     key = jlgetch()
     while key.value != "q"
         if key.value == "w"
-            person.x -= 1
-        elseif key.value == "a"
             person.y -= 1
+        elseif key.value == "a"
+            person.x -= 1
         elseif key.value == "s"
-            person.x += 1
-        elseif key.value == "d"
             person.y += 1
+        elseif key.value == "d"
+            person.x += 1
         end
 
         erase()
         mvprintw(10,10,string(person.x))
         mvprintw(10,20,string(person.y))
-        render_object(person)
+        render_objects(objects)
 
         refresh()
 
