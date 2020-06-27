@@ -1,2 +1,8 @@
+name = "SpecTerm"
+uuid = "030d13c6-a338-46b7-907b-347931e0ba9e"
+authors = ["James Schloss <jrs.schloss@gmail.com>"]
+version = "0.1.0"
+
 [deps]
+Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
 TextUserInterfaces = "2a09ff82-1be9-11e9-2ab7-19964783a84b"
