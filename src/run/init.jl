@@ -2,6 +2,7 @@ function init()
     init_tui()
     bg = initscr()
     nodelay(bg, true)
+    curs_set(0)
     start_color()
     #use_default_colors()
 

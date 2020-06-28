@@ -5,17 +5,20 @@ using SpecTerm
 
 function main()
     bg = init()
-    curs_set(0)
 
     objects = Vector{Object}()
 
-    border = create_rectangle(20,0,4,80)
+    text = "Yo yo yo, We cool dawg? What up? Are you happy with your life right now? I cannot imagine that would be the case, just looking at you. I am now adding more characters to the buffer to make sure we are erasing old content correctly."
+
+    dialogue = create_dialogue(bg)
     person = create_person(1,1)
 
-    ball = Object(25,25,1,1,"o")
+    write_dialogue(dialogue, text)
+
+    ball = Shape(25,25,1,1,"o")
 
     push!(objects, person)
-    push!(objects, border)
+    push!(objects, dialogue)
     push!(objects, ball)
     render_objects(objects)
 

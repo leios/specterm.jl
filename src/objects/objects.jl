@@ -1,4 +1,7 @@
-mutable struct Object
+# Every subtype of Object requires at least x, y, width, height, content
+abstract type Object end
+
+mutable struct Shape <: Object
     y::Int
     x::Int
     height::Int
@@ -6,7 +9,12 @@ mutable struct Object
     content::Union{Any, Vector{Any}}
 end
 
-function render_object(obj)
+# This depends on each Shape having a similar constructor
+#function Base.convert(::Type{T}, Src::T) where T<:Object
+#    T(Src.x, Src.y, Src.height, Src.width, Src.content)
+#end
+
+function render_object(obj::Object)
     if typeof(obj.content)==String
         mvprintw(obj.y, obj.x, obj.content)
     elseif typeof(obj.content)==Vector{String}
@@ -46,10 +54,10 @@ function create_rectangle(init_y::Int, init_x::Int, height::Int, width::Int;
         push!(rectangle_content,left[ci]*lpad("", width-2,center[ci])*right[ci])
     end
 
-    return Object(init_y, init_x, height, width, rectangle_content)
+    return Shape(init_y, init_x, height, width, rectangle_content)
 end
 
 function create_person(init_y::Int, init_x::Int)
-    person = Object(init_y, init_x, 1, 1, "S")
+    person = Shape(init_y, init_x, 1, 1, "S")
     return person
 end
